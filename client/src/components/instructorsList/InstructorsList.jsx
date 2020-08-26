@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
@@ -11,11 +12,17 @@ import TableRow from "@material-ui/core/TableRow";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import { IconButton } from "@material-ui/core";
+// import {
+//   getInstructors,
+//   addInstructor,
+//   deleteInstructor,
+//   updateInstructor,
+// } from "../../actions/instructorActions";
 
 const columns = [
   {
-    id: "instructor",
-    label: "Instructor",
+    id: "name",
+    label: "Name",
     //   minWidth: 170
   },
   {
@@ -40,14 +47,8 @@ const columns = [
   },
 ];
 
-function createData(
-  instructor,
-  subscriptionDate,
-  timeTable,
-  numberOfTracks,
-  action
-) {
-  return { instructor, subscriptionDate, timeTable, numberOfTracks, action };
+function createData(name, subscriptionDate, timeTable, numberOfTracks, action) {
+  return { name, subscriptionDate, timeTable, numberOfTracks, action };
 }
 
 const rows = [
@@ -65,7 +66,11 @@ const useStyles = makeStyles({
   },
 });
 
-export default function StickyHeadTable() {
+const StickyHeadTable = () => {
+  const instructors = useSelector(
+    (state) => state.instructorReducer.instructors
+  );
+  console.log("StickyHeadTable -> instructors", instructors);
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -78,7 +83,6 @@ export default function StickyHeadTable() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
   return (
     <Paper className={classes.root}>
       <TableContainer className={classes.container}>
@@ -91,7 +95,7 @@ export default function StickyHeadTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
+            {instructors
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
@@ -125,4 +129,5 @@ export default function StickyHeadTable() {
       />
     </Paper>
   );
-}
+};
+export default StickyHeadTable;

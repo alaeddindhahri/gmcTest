@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -9,6 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import { Grid, TextField } from "@material-ui/core";
+import { addInstructor } from "../../actions/instructorActions";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -31,7 +33,17 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function FullScreenDialog(props) {
+function FullScreenDialog(props) {
+  const [instructor, setInstructor] = useState({
+    name: "",
+    timeTable: "",
+    numberOfTracks: 0,
+  });
+  const handleChange = (e) => {
+    setInstructor({ [e.target.name]: e.target.value });
+  };
+  const handleSave = (instructor) => {};
+
   const classes = useStyles();
 
   return (
@@ -64,13 +76,28 @@ export default function FullScreenDialog(props) {
           <form autoComplete="off" style={{ width: "100%" }}>
             <Grid container className={classes.inputContainer}>
               <Grid item lg={4}>
-                <TextField id="name" label="Name" />
+                <TextField
+                  id="name"
+                  label="Name"
+                  name="name"
+                  onChange={(e) => handleChange(e)}
+                />
               </Grid>
               <Grid item lg={4}>
-                <TextField id="timeTable" label="Time table" />
+                <TextField
+                  id="timeTable"
+                  label="Time table"
+                  name="timeTable"
+                  onChange={(e) => handleChange(e)}
+                />
               </Grid>
               <Grid item lg={4}>
-                <TextField id="numberOfTracks" label="Number of tracks" />
+                <TextField
+                  id="numberOfTracks"
+                  label="Number of tracks"
+                  name="numberOfTracks"
+                  onChange={(e) => handleChange(e)}
+                />
               </Grid>
             </Grid>
           </form>
@@ -79,3 +106,5 @@ export default function FullScreenDialog(props) {
     </div>
   );
 }
+
+export default connect(null, { addInstructor })(FullScreenDialog);
