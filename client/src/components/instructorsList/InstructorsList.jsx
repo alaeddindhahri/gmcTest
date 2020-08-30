@@ -15,10 +15,10 @@ import { IconButton } from "@material-ui/core";
 //components
 import Spinner from "../spinner/Spinner";
 import Modal from "../modal/Modal";
-//actions
+//actions and types
 import {
-  getInstructors,
-  deleteInstructor,
+  initInstructors,
+  initDeleteInstructors,
 } from "../../actions/instructorActions";
 const columns = [
   {
@@ -59,14 +59,21 @@ const useStyles = makeStyles({
 });
 
 const StickyHeadTable = (props) => {
-  const { instructors, isLoading, getInstructors } = props;
+  const {
+    instructors,
+    isLoading,
+    initInstructors,
+    initDeleteInstructors,
+  } = props;
   const [isOpen, setIsOpen] = useState(false);
   const handleSetIsOpen = () => {
     setIsOpen(!isOpen);
   };
+  //on mounting get data from api
   useEffect(() => {
-    getInstructors();
-  }, [getInstructors]);
+    initInstructors();
+  }, [initInstructors]);
+
   const classes = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -140,7 +147,7 @@ const StickyHeadTable = (props) => {
                                     </IconButton>
                                     <IconButton
                                       onClick={() =>
-                                        props.deleteInstructor(row._id)
+                                        initDeleteInstructors(row._id)
                                       }
                                     >
                                       <DeleteIcon />
@@ -176,7 +183,7 @@ const mapStateToProps = (state) => ({
   isLoading: state.instructorReducer.isLoading,
 });
 const mapDispatchToProps = {
-  getInstructors,
-  deleteInstructor,
+  initInstructors,
+  initDeleteInstructors,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(StickyHeadTable);

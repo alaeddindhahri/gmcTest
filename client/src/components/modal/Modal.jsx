@@ -12,8 +12,8 @@ import Slide from "@material-ui/core/Slide";
 import { Grid, TextField } from "@material-ui/core";
 //actions
 import {
-  addInstructor,
-  updateInstructor,
+  initUpdateInstructors,
+  initAddInstructors,
 } from "../../actions/instructorActions";
 
 const useStyles = makeStyles((theme) => ({
@@ -38,13 +38,20 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 function FullScreenDialog(props) {
-  const { title, open, handleClose, addInstructor, updateInstructor } = props;
+  const {
+    title,
+    open,
+    handleClose,
+    initUpdateInstructors,
+    initAddInstructors,
+  } = props;
   const [instructor, setInstructor] = useState({
     name: "",
     timeTable: "",
     numberOfTracks: 0,
     subscriptionDate: Date(),
   });
+  //on mounting, will check if there is an instructor object so it fills the form for edit
   useEffect(() => {
     if (props.instructor) {
       setInstructor(props.instructor);
@@ -82,8 +89,8 @@ function FullScreenDialog(props) {
               color="inherit"
               onClick={() => {
                 props.instructor
-                  ? updateInstructor(instructor._id, instructor)
-                  : addInstructor(instructor);
+                  ? initUpdateInstructors(instructor._id, instructor)
+                  : initAddInstructors(instructor);
                 handleClose();
               }}
             >
@@ -130,8 +137,8 @@ function FullScreenDialog(props) {
 }
 
 const mapDispatchToProps = {
-  addInstructor,
-  updateInstructor,
+  initUpdateInstructors,
+  initAddInstructors,
 };
 
 export default connect(null, mapDispatchToProps)(FullScreenDialog);

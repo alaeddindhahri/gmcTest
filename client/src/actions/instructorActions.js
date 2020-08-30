@@ -1,47 +1,44 @@
-import axios from "axios";
 import {
+  INIT_INSTRUCTORS,
+  INIT_DELETE_INSTRUCTOR,
+  INIT_ADD_INSTRUCTOR,
+  INIT_UPDATE_INSTRUCTOR,
   GET_INSTRUCTORS,
-  ADD_INSTRUCTOR,
-  UPDATE_INSTRUCTOR,
-  DELETE_INSTRUCTOR,
   INSTRUCTORS_LOADING,
 } from "./types";
 
+//initialize getting instructor
+export const initInstructors = () => {
+  return {
+    type: INIT_INSTRUCTORS,
+  };
+};
+//initialize deleting instructor
+export const initDeleteInstructors = (id) => {
+  return {
+    type: INIT_DELETE_INSTRUCTOR,
+    payload: id,
+  };
+};
+//initialize add instructor
+export const initAddInstructors = (newInstructor) => {
+  return {
+    type: INIT_ADD_INSTRUCTOR,
+    payload: newInstructor,
+  };
+};
+//initialize update instructor
+export const initUpdateInstructors = (id, updatedInstructor) => {
+  return {
+    type: INIT_UPDATE_INSTRUCTOR,
+    payload: { id, updatedInstructor },
+  };
+};
+
 //get all instructors
-export const getInstructors = () => (dispatch) => {
-  dispatch(setInstructorsLoading());
-  axios
-    .get("/api/instructors")
-    .then((res) => dispatch({ type: GET_INSTRUCTORS, payload: res.data }))
-    .catch((err) => console.log("Get instructors error: ", err));
+export const getInstructors = (instructors) => {
+  return { type: GET_INSTRUCTORS, payload: instructors };
 };
-//add new instructor
-export const addInstructor = (newInstructor) => (dispatch) => {
-  dispatch({ type: ADD_INSTRUCTOR });
-  axios
-    .post("/api/instructors/add", newInstructor)
-    .then((res) => dispatch(getInstructors()))
-    .catch((err) => console.log("err add new instructor "));
-};
-// delete instructor by id
-export const deleteInstructor = (id) => (dispatch) => {
-  dispatch({ type: DELETE_INSTRUCTOR });
-
-  axios
-    .delete(`/api/instructors/delete/${id}`)
-    .then((res) => dispatch(getInstructors()))
-    .catch((err) => console.log("err delete instructor"));
-};
-
-//update instructor by id
-export const updateInstructor = (id, updatedInstructor) => (dispatch) => {
-  dispatch({ type: UPDATE_INSTRUCTOR, payload: { id, updatedInstructor } });
-  axios
-    .put(`/api/instructors/update/${id}`, updatedInstructor)
-    .then((res) => dispatch(getInstructors()))
-    .catch((err) => console.log("update instructor error"));
-};
-
 // Instructors Loading
 export const setInstructorsLoading = () => {
   return { type: INSTRUCTORS_LOADING };
