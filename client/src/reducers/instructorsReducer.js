@@ -23,7 +23,7 @@ const instructorsReducer = (state = initialState, action) => {
       return {
         ...state,
         instructors: state.instructors.map((el) =>
-          el.id === action.payload.id ? action.payload : el
+          el.id === action.payload.id ? action.payload.updatedInstructor : el
         ),
       };
     }
@@ -31,6 +31,7 @@ const instructorsReducer = (state = initialState, action) => {
       return {
         ...state,
         instructors: state.instructors.filter((el) => el.id !== action.payload),
+        isLoading: false,
       };
     }
     case INSTRUCTORS_LOADING: {

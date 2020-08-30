@@ -1,5 +1,5 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
@@ -12,13 +12,14 @@ import TableRow from "@material-ui/core/TableRow";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import { IconButton } from "@material-ui/core";
-// import {
-//   getInstructors,
-//   addInstructor,
-//   deleteInstructor,
-//   updateInstructor,
-// } from "../../actions/instructorActions";
-
+//components
+import Spinner from "../spinner/Spinner";
+import Modal from "../modal/Modal";
+//actions
+import {
+  getInstructors,
+  deleteInstructor,
+} from "../../actions/instructorActions";
 const columns = [
   {
     id: "name",
@@ -47,15 +48,6 @@ const columns = [
   },
 ];
 
-function createData(name, subscriptionDate, timeTable, numberOfTracks, action) {
-  return { name, subscriptionDate, timeTable, numberOfTracks, action };
-}
-
-const rows = [
-  createData("Bill Billy", Date(), "Fulltime", "1"),
-  createData("Mike Miky", Date(), "Part time", "4"),
-];
-
 const useStyles = makeStyles({
   root: {
     width: "100%",
@@ -66,14 +58,22 @@ const useStyles = makeStyles({
   },
 });
 
-const StickyHeadTable = () => {
-  const instructors = useSelector(
-    (state) => state.instructorReducer.instructors
-  );
-  console.log("StickyHeadTable -> instructors", instructors);
+const StickyHeadTable = (props) => {
+  const { instructors, isLoading, getInstructors } = props;
+  const [isOpen, setIsOpen] = useState(false);
+  const handleSetIsOpen = () => {
+    setIsOpen(!isOpen);
+  };
+  useEffect(() => {
+    getInstructors();
+  }, [getInstructors]);
   const classes = useStyles();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [toUpdateInstructor, setToUpdateInstructor] = useState({});
+  const handleSetToUpdateInstructor = (instructor) => {
+    setToUpdateInstructor(instructor);
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -85,49 +85,98 @@ const StickyHeadTable = () => {
   };
   return (
     <Paper className={classes.root}>
-      <TableContainer className={classes.container}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell key={column.id}>{column.label}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {instructors
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return <TableCell key={column.id}>{value}</TableCell>;
-                    })}
-                    <TableCell key={columns[4].id}>
-                      <IconButton>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton>
-                        <DeleteIcon />
-                      </IconButton>
+      {isOpen ? (
+        <Modal
+          title="Update instructor"
+          open={isOpen}
+          handleClose={handleSetIsOpen}
+          instructor={toUpdateInstructor}
+        />
+      ) : (
+        <div>
+          <TableContainer className={classes.container}>
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell key={column.id}>{column.label}</TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              {isLoading ? (
+                <TableBody>
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
+                    <TableCell>
+                      <Spinner color="primary" />
                     </TableCell>
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
+                </TableBody>
+              ) : (
+                <TableBody>
+                  {instructors
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row) => {
+                      return (
+                        <TableRow hover tabIndex={-1} key={row._id}>
+                          {columns.map((column) => {
+                            const value = row[column.id];
+                            return (
+                              <TableCell key={column.id}>
+                                {value ? (
+                                  value
+                                ) : (
+                                  <div key={column.id}>
+                                    <IconButton
+                                      onClick={() => {
+                                        handleSetToUpdateInstructor(row);
+                                        handleSetIsOpen();
+                                      }}
+                                    >
+                                      <EditIcon />
+                                    </IconButton>
+                                    <IconButton
+                                      onClick={() =>
+                                        props.deleteInstructor(row._id)
+                                      }
+                                    >
+                                      <DeleteIcon />
+                                    </IconButton>
+                                  </div>
+                                )}
+                              </TableCell>
+                            );
+                          })}
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              )}
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 100]}
+            component="div"
+            count={instructors.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
+        </div>
+      )}
     </Paper>
   );
 };
-export default StickyHeadTable;
+const mapStateToProps = (state) => ({
+  instructors: state.instructorReducer.instructors,
+  isLoading: state.instructorReducer.isLoading,
+});
+const mapDispatchToProps = {
+  getInstructors,
+  deleteInstructor,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(StickyHeadTable);

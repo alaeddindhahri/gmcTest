@@ -58,7 +58,6 @@ router.route("/update/:_id").put(async (req, res) => {
     if (req.body.numberOfTracks) {
       updates.numberOfTracks = req.body.numberOfTracks;
     }
-    console.log("updatedInstructor", updates);
     const updatedInstructor = await instructor.findByIdAndUpdate(
       { _id: req.params._id },
       updates

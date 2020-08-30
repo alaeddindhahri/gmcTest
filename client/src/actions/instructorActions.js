@@ -35,7 +35,7 @@ export const deleteInstructor = (id) => (dispatch) => {
 
 //update instructor by id
 export const updateInstructor = (id, updatedInstructor) => (dispatch) => {
-  dispatch({ type: UPDATE_INSTRUCTOR });
+  dispatch({ type: UPDATE_INSTRUCTOR, payload: { id, updatedInstructor } });
   axios
     .put(`/api/instructors/update/${id}`, updatedInstructor)
     .then((res) => dispatch(getInstructors()))

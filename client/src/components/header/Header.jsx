@@ -49,12 +49,7 @@ export default function Header() {
         </Grid>
       </Grid>
       {open ? (
-        <Modal
-          title="New instructor"
-          open={open}
-          handleClickOpen={handleClickOpen}
-          handleClose={handleClose}
-        />
+        <Modal title="New instructor" open={open} handleClose={handleClose} />
       ) : null}
     </Grid>
   );
